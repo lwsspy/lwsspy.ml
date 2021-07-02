@@ -301,7 +301,53 @@ values.</p>
 <dl class="py class">
 <dt id="lwsspy.ml.labeling.volumelabeler.VolumeLabeler">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">lwsspy.ml.labeling.volumelabeler.</span></code><code class="sig-name descname"><span class="pre">VolumeLabeler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeldict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'410':</span> <span class="pre">2,</span> <span class="pre">'660':</span> <span class="pre">3,</span> <span class="pre">'moho':</span> <span class="pre">1,</span> <span class="pre">'none':</span> <span class="pre">9999}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeled</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lwsspy/ml/labeling/volumelabeler.html#VolumeLabeler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lwsspy.ml.labeling.volumelabeler.VolumeLabeler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><dl class="py method">
+<dt id="lwsspy.ml.labeling.volumelabeler.VolumeLabeler.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeldict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'410':</span> <span class="pre">2,</span> <span class="pre">'660':</span> <span class="pre">3,</span> <span class="pre">'moho':</span> <span class="pre">1,</span> <span class="pre">'none':</span> <span class="pre">9999}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeled</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lwsspy/ml/labeling/volumelabeler.html#VolumeLabeler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lwsspy.ml.labeling.volumelabeler.VolumeLabeler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class uses the 
+:class:<code class="docutils literal notranslate"><span class="pre">lwsspy.ml.labeling.segementlabeler.SegmentLabeler</span></code> to label
+slices in a volume. After instantiation, use the label 
+method to label a Volumen of single Channel data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">arraylike</span></dt><dd><p>x vector</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">arralike</span></dt><dd><p>y vector</p>
+</dd>
+<dt><strong>z</strong><span class="classifier">arraylike</span></dt><dd><p>z vector</p>
+</dd>
+<dt><strong>V</strong><span class="classifier">arraylike</span></dt><dd><p>3D array with data corresponding to vectors X x Y x Z direction.</p>
+</dd>
+<dt><strong>labeldict</strong><span class="classifier">dict, optional</span></dt><dd><p>dictionary with labels, by default {‘moho’: 1, ‘410’: 2, ‘660’: 3, ‘none’: 9999}</p>
+</dd>
+<dt><strong>labeled</strong><span class="classifier">Optional[dict], optional</span></dt><dd><p>Optional dictionary with labeled volume. Labeled should contain 
+4 variables lx, ly, lz, lV, where l{x,y,z} are boolean arrays that
+where defined as locations for labeled layers. 
+Useful if you need to take a labeling break. Right now there is no 
+way of resuming to an image make sure you finisshe the ones you
+have started, by default None</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Things that I have to fix:</p>
+<ol class="arabic simple">
+<li><p>The volume should be allowed to be 3-channel data</p></li>
+<li><p>Also allow for custom normalizations and colormaps</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>Lucas Sawade (<a class="reference external" href="mailto:lsawade&#37;&#52;&#48;princeton&#46;edu">lsawade<span>&#64;</span>princeton<span>&#46;</span>edu</a>)</p>
+</dd>
+<dt class="field-even">Last Modified</dt>
+<dd class="field-even"><p>2021.07.02 00.00 (Lucas Sawade)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </div>
 </div>
