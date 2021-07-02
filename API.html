@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API &#8212; LWSSPY - Machine Learning Tools</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+      <img src="_static/logo.png" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">LWSSPY - Machine Learning Tools</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <p class="caption">
+ <span class="caption-text">
+  MAIN DOCS:
+ </span>
+</p>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="installation.html">
+   Installation
+  </a>
+ </li>
+</ul>
+<p class="caption">
+ <span class="caption-text">
+  SOURCE:
+ </span>
+</p>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   API
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Theme by the <a href="https://ebp.jupyterbook.org">Executable Book Project</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/API.rst.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.rst</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/lwsspy/lwsspy.ml"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/lwsspy/lwsspy.ml/issues/new?title=Issue%20on%20page%20%2FAPI.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        <a class="edit-button" href="https://github.com/lwsspy/lwsspy.ml/edit/master/API.rst"><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Edit this page"><i class="fas fa-pencil-alt"></i>suggest edit</button></a>
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#labeling">
+   Labeling
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="labeling">
+<h2>Labeling<a class="headerlink" href="#labeling" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="lwsspy.ml.labeling.segmentlabeler.SegmentLabeler">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">lwsspy.ml.labeling.segmentlabeler.</span></code><code class="sig-name descname"><span class="pre">SegmentLabeler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeldict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'410':</span> <span class="pre">2,</span> <span class="pre">'660':</span> <span class="pre">3,</span> <span class="pre">'moho':</span> <span class="pre">1,</span> <span class="pre">'none':</span> <span class="pre">9999}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglevel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lwsspy/ml/labeling/segmentlabeler.html#SegmentLabeler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lwsspy.ml.labeling.segmentlabeler.SegmentLabeler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="lwsspy.ml.labeling.segmentlabeler.SegmentLabeler.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeldict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'410':</span> <span class="pre">2,</span> <span class="pre">'660':</span> <span class="pre">3,</span> <span class="pre">'moho':</span> <span class="pre">1,</span> <span class="pre">'none':</span> <span class="pre">9999}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loglevel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lwsspy/ml/labeling/segmentlabeler.html#SegmentLabeler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lwsspy.ml.labeling.segmentlabeler.SegmentLabeler.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class takes in an image, some corresponding 
+segmentation e.g. (SLIC) and a label dictionary that can be used to
+label the image in an ‘intuitive’ GUI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">ndarray [w x h x 3]</span></dt><dd><p>Image</p>
+</dd>
+<dt><strong>segmentation</strong><span class="classifier">ndarray [w x h]</span></dt><dd><p>mask that has a unique nunmber for each segment such that it can be
+labeled.</p>
+</dd>
+<dt><strong>labeldict</strong><span class="classifier">dict, optional</span></dt><dd><p>Dictionary of labels, must contain the ‘none’ keyword, which 
+denotes the unlabeled value, 
+by default {‘moho’: 1, ‘410’: 2, ‘660’: 3, ‘none’: 9999}</p>
+</dd>
+<dt><strong>loglevel</strong><span class="classifier">logging.LOGLEVEL, optional</span></dt><dd><p>loglevel, used to debug the event loop. Not necessary to be 
+modified, by default logging.INFO</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Authors</dt>
+<dd class="field-odd"><p>Lucas Sawade (<a class="reference external" href="mailto:lsawade&#37;&#52;&#48;princeton&#46;edu">lsawade<span>&#64;</span>princeton<span>&#46;</span>edu</a>)</p>
+</dd>
+<dt class="field-even">Last Modified</dt>
+<dd class="field-even"><p>2021.07.02 00.00 (Lucas Sawade)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>The usage of this labeling is fairly straight forward. Given an image,
+<code class="docutils literal notranslate"><span class="pre">img</span></code>, and a segmentation, <code class="docutils literal notranslate"><span class="pre">segs</span></code>, of said image, we instantiate 
+the class and call the start labeling method.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lwsspy.ml</span> <span class="kn">import</span> <span class="n">SegmentLabeler</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sl</span> <span class="o">=</span> <span class="n">SegmentLabeler</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">segments</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">labeled_mask</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="n">start_labeling</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This will open two figures. One contains the image by itself and the 
+second one contains the image and the outlines of the mask. We will 
+use the firs image for reference and the second image to actually 
+label the image segments. The GUI has a few controls that can be used.</p>
+<table class="table">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Control</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mouse-left</p></td>
+<td><p>Add label to segment</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mouse-right</p></td>
+<td><p>Remove label to segment</p></td>
+</tr>
+<tr class="row-even"><td><p>Mouse-left-drag</p></td>
+<td><p>Add labels to segments dragged over</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mouse-right-drag</p></td>
+<td><p>Remove labels to segments dragged over</p></td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>Next label</p></td>
+</tr>
+<tr class="row-odd"><td><p>p</p></td>
+<td><p>Previous label  True</p></td>
+</tr>
+<tr class="row-even"><td><p>d</p></td>
+<td><p>Delete previously labeled segment</p></td>
+</tr>
+<tr class="row-odd"><td><p>esc</p></td>
+<td><p>Close figure and return the currently
+selected mask</p></td>
+</tr>
+</tbody>
+</table>
+<p>The currently selected mask will also be returned if any of the figures 
+is closed.</p>
+<p>The selected mask can then be viewed via</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imshow</span><span class="p">(</span><span class="n">labeled_mask</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that depending on the values you chose in the label dictionary
+you will have to create a colormap and norm that resembles the mask 
+values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="lwsspy.ml.labeling.volumelabeler.VolumeLabeler">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">lwsspy.ml.labeling.volumelabeler.</span></code><code class="sig-name descname"><span class="pre">VolumeLabeler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">V</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeldict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'410':</span> <span class="pre">2,</span> <span class="pre">'660':</span> <span class="pre">3,</span> <span class="pre">'moho':</span> <span class="pre">1,</span> <span class="pre">'none':</span> <span class="pre">9999}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labeled</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lwsspy/ml/labeling/volumelabeler.html#VolumeLabeler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lwsspy.ml.labeling.volumelabeler.VolumeLabeler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="installation.html" title="previous page">Installation</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Lucas Sawade<br/>
+        
+            &copy; Copyright 2021, Lucas Sawade.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
