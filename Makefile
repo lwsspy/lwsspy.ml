@@ -7,7 +7,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = docs/source
 BUILDDIR      = docs/build
-GH_PAGES_SOURCES = docs src/meshslice setup.py setup.cfg 
+GH_PAGES_SOURCES = docs src/lwsspy/ml setup.py setup.cfg 
 
 # Put it first so that "make" without argument is like "make help".
 help:
