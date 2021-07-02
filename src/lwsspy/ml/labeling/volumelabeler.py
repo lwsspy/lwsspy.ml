@@ -34,13 +34,6 @@ class VolumeLabeler:
         slices in a volume. After instantiation, use the label 
         method to label a Volumen of single Channel data.
 
-        Notes
-        -----
-        Things that I have to fix:
-
-        1. The volume should be allowed to be 3-channel data
-        2. Also allow for custom normalizations and colormaps
-
         Parameters
         ----------
         x : arraylike
@@ -63,6 +56,11 @@ class VolumeLabeler:
 
         Notes
         -----
+
+        Things that I have to fix:
+
+        1. The volume should be allowed to be 3-channel data
+        2. Also allow for custom normalizations and colormaps
 
         :Authors:
             Lucas Sawade (lsawade@princeton.edu)
