@@ -60,7 +60,7 @@ class SegmentLabeler:
         d                 Delete previously labeled segment
         esc               Close figure and return the currently 
                           selected mask
-        ================= =====================================
+        ================= ======================================
 
         The currently selected mask will also be returned if any of the figures 
         is closed.

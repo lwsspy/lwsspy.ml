@@ -1,17 +1,26 @@
 
-# %%
+
+# External
 from typing import Optional
-from copy import deepcopy
 import numpy as np
+from matplotlib import colors
 import matplotlib.pyplot as plt
-from pyglimer.ccp.plot_utils.midpointcolornorm import MidpointNormalize
-
-import matplotlib.pyplot as plt
-import numpy as np
-
 from skimage.segmentation import slic
 
+# Internal
 from .segmentlabeler import SegmentLabeler
+
+
+class MidpointNormalize(colors.Normalize):
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        colors.Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        # I'm ignoring masked values and all kinds of edge cases to make a
+        # simple example...
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
 
 
 class VolumeLabeler:
@@ -20,9 +29,39 @@ class VolumeLabeler:
             self, x, y, z, V,
             labeldict={'moho': 1, '410': 2, '660': 3, 'none': 9999},
             labeled: Optional[dict] = None):
-        """Labeled should contain 4 variables lx, ly, lz, lV, where
-        l{x,y,z} are boolean arrays that where defined as locations for 
-        labeled layers"""
+        """This class uses the 
+        :class:``lwsspy.ml.labeling.segementlabeler.SegmentLabeler`` to label
+        slices in a volume. After instantiation, use the label 
+        method to label a Volumen of single Channel data.
+
+        Notes
+        -----
+        Things that I have to fix:
+
+        1. The volume should be allowed to be 3-channel data
+        2. Also allow for custom normalizations and colormaps
+
+        Parameters
+        ----------
+        x : arraylike
+            x vector
+        y : arralike
+            y vector
+        z : arraylike
+            z vector
+        V : arraylike
+            3D array with data corresponding to vectors X x Y x Z direction.
+        labeldict : dict, optional
+            dictionary with labels, by default {'moho': 1, '410': 2, '660': 3, 'none': 9999}
+        labeled : Optional[dict], optional
+            Optional dictionary with labeled volume. Labeled should contain 
+            4 variables lx, ly, lz, lV, where l{x,y,z} are boolean arrays that
+            where defined as locations for labeled layers. 
+            Useful if you need to take a labeling break. Right now there is no 
+            way of resuming to an image make sure you finisshe the ones you
+            have started, by default None
+
+        """
 
         # Variables
         self.x = x
@@ -55,15 +94,15 @@ class VolumeLabeler:
             self.V), vmax=0.25 * np.max(self.V))
 
     @classmethod
-    def from_CCPVolume(self, filename, *args, **kwargs):
+    def from_volume(self, filename, *args, **kwargs):
 
         # Load NPZ file
 
         vardict = np.load(filename)
 
         # Assign variables
-        y = vardict["y"]
         x = vardict["x"]
+        y = vardict["y"]
         z = vardict["z"]
         V = vardict["data"]
 
@@ -108,6 +147,25 @@ class VolumeLabeler:
         )
 
     def label(self, direction='x', n=20, n_segments=700):
+        """The labeling method enables you to label a ``n`` slices
+        The labeler will automatically pick ``n`` unlabeled
+        slices randomly. The direction let's you decide the normal to the 
+        slices.
+
+        Parameters
+        ----------
+        direction : str, optional
+            normal to slices, by default 'x'
+        n : int, optional
+            number of slices tto label, by default 20
+        n_segments : int, optional
+            number of segments to split the image into, by default 700
+
+        Raises
+        ------
+        ValueError
+            [description]
+        """
 
         # Get slice to plot
         if direction == 'x':
