@@ -7,6 +7,6 @@ dependencies:
   - pytest
   - pip
   - pip:
-    - numpydocs
+    - numpydoc
     - sphinx
     - sphinx-book-theme
