@@ -1,7 +1,7 @@
 dist: xenial   # required for Python >= 3.7
 language: python
 python:
-  - "3.7"
+  - "3.8"
 
 # command to install dependencies
 install:
@@ -14,7 +14,7 @@ install:
   - conda update -q conda
   - conda info -a
   - conda env create -f environment.yml
-  - source activate meshslice
+  - source activate lwsspy-ml
   - pip install -e .
 
 # command to run tests

@@ -51,7 +51,7 @@ class VolumeLabeler:
             4 variables lx, ly, lz, lV, where l{x,y,z} are boolean arrays that
             where defined as locations for labeled layers. 
             Useful if you need to take a labeling break. Right now there is no 
-            way of resuming to an image make sure you finisshe the ones you
+            way of resuming to an image make sure you finishes the ones you
             have started, by default None
 
         Notes
