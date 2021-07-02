@@ -3,21 +3,30 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to meshslice's documentation!
-=====================================
+``lwsspy.ml`` - Machine Learning Tools
+======================================
+
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
-   :caption: Contents:
-
+   :caption: MAIN DOCS:
+   
+   
    installation.rst
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: SOURCE:
+
    API.rst
 
 
 
-Indices and tables
-==================
+.. Indices and tables
+.. ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
