@@ -61,6 +61,15 @@ class VolumeLabeler:
             way of resuming to an image make sure you finisshe the ones you
             have started, by default None
 
+        Notes
+        -----
+
+        :Authors:
+            Lucas Sawade (lsawade@princeton.edu)
+
+        :Last Modified:
+            2021.07.02 00.00 (Lucas Sawade)
+
         """
 
         # Variables

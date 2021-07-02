@@ -6,6 +6,18 @@
 ``lwsspy.ml`` - Machine Learning Tools
 ======================================
 
+Hi!
+
+This a set of functions and classes that I have written to make my
+machine learning life easier.
+
+Feel free to use, fork/modify/pull etc. 
+This is far from done/what I want it to look like and I welcome edits and 
+suggestions. 
+
+Cheers,
+
+Lucas
 
 .. toctree::
    :hidden:

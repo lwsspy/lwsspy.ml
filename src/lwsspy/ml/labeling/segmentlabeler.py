@@ -90,6 +90,16 @@ class SegmentLabeler:
             loglevel, used to debug the event loop. Not necessary to be 
             modified, by default logging.INFO
 
+
+        Notes
+        -----
+
+        :Authors:
+            Lucas Sawade (lsawade@princeton.edu)
+
+        :Last Modified:
+            2021.07.02 00.00 (Lucas Sawade)
+
         """
 
         self.img = img

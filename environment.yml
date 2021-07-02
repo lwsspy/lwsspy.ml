@@ -1,14 +1,12 @@
 name: lwsspy-ml
 dependencies:
   - python>=3.8
-  - numpy
   - matplotlib
   - numpy
   - scikit-image
   - pytest
   - pip
   - pip:
-    - numpydoc
-    - pyvista
+    - numpydocs
     - sphinx
     - sphinx-book-theme
