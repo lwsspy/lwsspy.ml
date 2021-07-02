@@ -1,0 +1,13 @@
+name: lwsspy-ml
+dependencies:
+  - python=3.8
+  - numpy
+  - matplotlib
+  - numpy
+  - scikit-image
+  - pytest
+  - pip
+  - pip:
+    - pyvista
+    - sphinx
+    - sphinx_rtd_theme
