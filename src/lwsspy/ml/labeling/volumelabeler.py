@@ -153,7 +153,7 @@ class VolumeLabeler:
             labeldict=self.labeldict
         )
 
-    def label(self, direction='x', n=20, n_segments=700):
+    def label(self, direction='x', n=20, **kwargs):
         """The labeling method enables you to label a ``n`` slices
         The labeler will automatically pick ``n`` unlabeled
         slices randomly. The direction let's you decide the normal to the 
@@ -174,6 +174,16 @@ class VolumeLabeler:
             [description]
         """
 
+        # Create default value dictionary for the slic pixel selector
+        slicdict = dict(
+            n_segments=400,
+            compactness=0.02,
+            sigma=0.0,
+            start_label=0)
+
+        # Update given some kwargs
+        slicdict.update(dict(**kwargs))
+
         # Get slice to plot
         if direction == 'x':
             tobelabeled = self.__get_randarray__(self.labeled["lx"], n)
@@ -184,7 +194,12 @@ class VolumeLabeler:
         else:
             raise ValueError(f'Direction {direction} not implemented.')
 
+        x = True
+        counter = 0
+        # while x:
+        #     _label_idx = tobelabeled[counter]
         for _label_idx in tobelabeled:
+
             try:
                 # Get slice to plot
                 if direction == 'x':
@@ -194,30 +209,41 @@ class VolumeLabeler:
                 elif direction == 'z':
                     array = self.V[:, :, _label_idx]
 
+                # Create image using norm and grayscale.å
                 img2 = self.cmap(self.norm(array))
                 img = img2[:, :, :-1]
 
                 # Super Pixel segmentation
-                segments = slic(
-                    img, n_segments=n_segments, compactness=20, sigma=0,
-                    start_label=0)
+                segments = slic(array, **slicdict)
 
                 # Label
                 sl = SegmentLabeler(img, segments, labeldict=self.labeldict)
+                out = sl.start_labeling()
+
+                # Skip or end labeling
+                if sl.omit:
+                    continue
+                elif sl.kill:
+                    x = False
+                    break
 
                 # Get slice to plot
                 if direction == 'x':
                     self.labeled["lV"][_label_idx,
-                                       :, :] = sl.start_labeling().T
+                                       :, :] = out.T
                     self.labeled["lx"][_label_idx] = True
                 elif direction == 'y':
                     self.labeled["lV"][:, _label_idx,
-                                       :] = sl.start_labeling().T
+                                       :] = out.T
                     self.labeled["ly"][_label_idx] = True
                 elif direction == 'z':
-                    self.labeled["lV"][:, :, _label_idx] = sl.start_labeling()
+                    self.labeled["lV"][:, :, _label_idx] = out
                     self.labeled["lz"][_label_idx] = True
+
+                counter += 1
+
             except KeyboardInterrupt:
+                x = False
                 break
 
     @staticmethod

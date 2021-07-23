@@ -58,6 +58,8 @@ class SegmentLabeler:
         n                 Next label
         p                 Previous label  True
         d                 Delete previously labeled segment
+        f                 Finish Labeling
+        s                 Skip this image
         esc               Close figure and return the currently 
                           selected mask
         ================= ======================================
@@ -122,6 +124,8 @@ class SegmentLabeler:
         self.activelabel = 0
         self.nlabels = len(self.picklabels)
         self.mouse_pressed = False
+        self.kill = False
+        self.omit = False
 
         # Logging
         self.loglevel = loglevel
@@ -158,13 +162,6 @@ class SegmentLabeler:
 
         self.logger.addHandler(ch)
 
-        # 'application' code
-        self.logger.debug('debug message')
-        self.logger.info('info message')
-        self.logger.warning('warn message')
-        self.logger.error('error message')
-        self.logger.critical('critical message')
-
     def plot_figure(self):
 
         self.logger.debug(f'Plotting Image & Segmentation...')
@@ -176,7 +173,8 @@ class SegmentLabeler:
         self.segment_figure = plt.figure(figsize=(6, 6))
         self.segment_ax = plt.subplot(111)
         self.segment_ax.imshow(
-            mark_boundaries(self.img, self.segmentation, color=(0, 0, 0)),
+            mark_boundaries(self.img, self.segmentation,
+                            color=(0, 0, 0), mode='inner'),
             aspect='auto')
 
         self.plot_labeled_image()
@@ -209,7 +207,8 @@ class SegmentLabeler:
         self.segment_ax.set_title(
             f"Picking {self.picklabels[self.activelabel]}")
         plt.draw()
-        self.segment_figure.canvas.mpl_connect('key_press_event', self.onkey)
+        self.segment_figure.canvas.mpl_connect(
+            'key_press_event', self.onkey)
         self.segment_figure.canvas.mpl_connect(
             'button_press_event', self.onclick)
         self.segment_figure.canvas.mpl_connect(
@@ -358,7 +357,15 @@ class SegmentLabeler:
         elif event.key == 'd':
             self.__remove_previous__()
 
+        elif event.key == 'f':
+            self.__stop_labeling__()
+
+        elif event.key == 'o':
+            self.omit = True
+            self.__stop_labeling__()
+
         elif event.key == 'escape':
+            self.kill = True
             self.__stop_labeling__()
 
     def __next_label__(self):
@@ -448,5 +455,3 @@ class SegmentLabeler:
         # Removed the plotted image so that it can be plotted again
         if hasattr(self, 'labeled_img'):
             del self.labeled_img
-
-        # Stop logging

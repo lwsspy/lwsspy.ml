@@ -23,6 +23,14 @@ pip install lwsspy.ml
 from lwsspy.ml import VolumeLabeler, ImageLabeler
 ```
 
+## Tip for Mac users
+
+There has been an issue with OpenMP linking multiple libraries use the following
+workaround to solve the issue
+```bash
+conda install nomkl
+```
+
 
 
 
