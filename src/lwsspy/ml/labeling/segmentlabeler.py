@@ -26,7 +26,7 @@ class SegmentLabeler:
     def __init__(self,
                  img,
                  segmentation,
-                 labeldict={'moho': 1, '410': 2, '660': 3, 'none': 9999},
+                 labeldict={'moho': 0, '410': 1, '660': 2, 'none': 3},
                  loglevel=logging.INFO):
         """This class takes in an image, some corresponding 
         segmentation e.g. (SLIC) and a label dictionary that can be used to
@@ -59,7 +59,7 @@ class SegmentLabeler:
         p                 Previous label  True
         d                 Delete previously labeled segment
         f                 Finish Labeling
-        s                 Skip this image
+        o                 Omit this image
         esc               Close figure and return the currently 
                           selected mask
         ================= ======================================

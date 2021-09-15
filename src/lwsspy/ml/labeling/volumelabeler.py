@@ -27,7 +27,7 @@ class VolumeLabeler:
 
     def __init__(
             self, x, y, z, V,
-            labeldict={'moho': 1, '410': 2, '660': 3, 'none': 9999},
+            labeldict={'moho': 0, '410': 1, '660': 2, 'none': 3},
             labeled: Optional[dict] = None):
         """This class uses the 
         :class:``lwsspy.ml.labeling.segementlabeler.SegmentLabeler`` to label
@@ -91,14 +91,14 @@ class VolumeLabeler:
             self.labeled = dict()
             self.labeled['lx'] = np.zeros(self.nx, dtype=bool)
             self.labeled['ly'] = np.zeros(self.ny, dtype=bool)
-            self.labeled['lz'] = np.zeros(self.ny, dtype=bool)
+            self.labeled['lz'] = np.zeros(self.nz, dtype=bool)
             self.labeled['lV'] = self.labeldict['none'] * \
                 np.ones(self.V.shape, dtype=int)
 
         # Colormap choices
         self.cmap = plt.get_cmap('seismic')
         self.norm = MidpointNormalize(midpoint=0, vmin=np.min(
-            self.V), vmax=0.25 * np.max(self.V))
+            self.V), vmax=0.15 * np.max(self.V))
 
     @classmethod
     def from_volume(self, filename, *args, **kwargs):
@@ -135,7 +135,7 @@ class VolumeLabeler:
         labeled["lV"] = vardict["lV"]
 
         # Label dictionary
-        labeldict = vardict["labeldict"]
+        labeldict = vardict["labeldict"].item()
 
         return self(
             x, y, z, V, *args,
