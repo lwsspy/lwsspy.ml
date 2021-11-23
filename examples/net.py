@@ -10,7 +10,6 @@ import numpy as np
 from lwsspy.ml.nn.ccpnet import CCPNet
 from lwsspy.ml.dataset.ccpdataset import CCPDataset
 from lwsspy.ml.sampling.imbalanced import ImbalancedDatasetSampler
-from lwsspy.ml.sampling.stratifiedbatchsampler import StratifiedBatchSampler
 from lwsspy.ml.dataset.subset import CustomSubset
 from torch.utils.data import DataLoader, dataloader
 

@@ -23,7 +23,7 @@ class CustomSubset(Dataset):
 
     def __getitem__(self, idx):
         item = self.dataset[self.indices[idx]][0]
-        label = self.()targets[idx]
+        label = self.targets[idx]
         return (item, label)
 
     def __getlabel__(self, idx):
