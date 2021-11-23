@@ -7,7 +7,6 @@ from torch.utils.data import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize, BoundaryNorm
-from copy import copy
 # from ...plot import plot_label
 
 
@@ -36,14 +35,6 @@ class CCPDataset(Dataset):
         self.labeled["lz"] = vardict["lz"]
         self.labeled["lV"] = vardict["lV"]
 
-        # Making sure we don't
-        self.fix_labeling()
-        self.positions = np.where(~np.equal(self.labeled["lV"], -999))
-        self.npositions = np.where(np.equal(self.labeled["lV"], -999))
-
-        self.NT = len(self.positions[0])
-        self.targets = torch.from_numpy(self.labeled["lV"][self.positions])
-
         # Label dictionary
         self.labeldict = vardict["labeldict"].item()
 
@@ -63,7 +54,7 @@ class CCPDataset(Dataset):
         self.nx = self.nlx * self.y.size * self.z.size
         self.ny = self.nly * self.x.size * self.z.size
         self.nz = self.nlz * self.x.size * self.y.size
-        # self.NT = self.nx + self.ny + self.nz
+        self.NT = self.nx + self.ny + self.nz
 
         # Subvolume dimennsions Slice dimensions
         self.dimx = (self.nlx, len(self.y), len(self.z))
@@ -90,78 +81,143 @@ class CCPDataset(Dataset):
         self.__set_img_cmap_norm__()
         self.__set_boundary_cmap_norm__()
 
-    def fix_labeling(self):
-
-        # kjlskj
-        x = copy(self.labeled["lV"])
-        x[~self.labeled['lx'], :, :] = -999
-        y = copy(self.labeled["lV"])
-        y[:, ~self.labeled['ly'], :] = -999
-        z = copy(self.labeled["lV"])
-        z[:, :, ~self.labeled['lz']] = -999
-
-        # lkjdsf
-        xs = ~np.equal(x, -999)
-        ys = ~np.equal(y, -999)
-        zs = ~np.equal(z, -999)
-
-        pos = (xs | ys | zs)
-
-        # xpos = np.hstack((xs[0], ys[0], zs[0]))
-        # ypos = np.hstack((xs[1], ys[1], zs[1]))
-        # zpos = np.hstack((xs[2], ys[2], zs[2]))
-
-        # pos = np.vstack((xpos, ypos, zpos))
-        # pos = np.unique(pos, axis=1)
-        # pos = pos[0], pos[1], pos[2]
-
-        # mask = np.ones_like(self.labeled['lV'], np.bool)
-        # mask[pos] = 0
-        self.labeled['lV'][~pos] = -999
-
     def __getitem__(self, index):
 
-        if index >= self.NT:
+        if index == self.NT:
             raise ValueError('Limit reached')
 
-        # first get position
-        idx = self.positions[0][index]
-        idy = self.positions[1][index]
-        idz = self.positions[2][index]
+        if index < self.nx and self.nx != 0:
+            dim = (self.nlx, len(self.y), len(self.z))
 
-        # Get slices
-        xslc = np.pad(
-            self.V[idx, :, :], self.pad, mode='constant',
-            constant_values=0)
-        yslc = np.pad(
-            self.V[:, idy, :], self.pad, mode='constant',
-            constant_values=0)
-        zslc = np.pad(
-            self.V[:, :, idz], self.pad, mode='constant',
-            constant_values=0)
+            # index of the image center in the subvolume
+            idx, idy, idz = np.unravel_index(index, dim)
 
-        # Get excerpts
-        ximage = xslc[
-            idy: idy + 2 * self.pad + 1,
-            idz: idz + 2 * self.pad + 1].T
+            # Position of slice
+            isl = np.where(self.labeled['lx'])[0][idx]
 
-        yimage = yslc[
-            idx: idx + 2 * self.pad + 1,
-            idz: idz + 2 * self.pad + 1].T
+            # Pad the slice
+            slc = np.pad(
+                self.V[isl, :, :], self.pad, mode='constant',
+                constant_values=0)
 
-        zimage = zslc[
-            idx: idx + 2 * self.pad + 1,
-            idy: idy + 2 * self.pad + 1]
+            # Get image form padded slice and the label from the labeled volume
+            # print([idy, idy + 2 * self.pad + 1])
+            # print([idz, idz + 2 * self.pad + 1])
 
-        label = self.labeled['lV'][idx, idy, idz]
+            image = slc[
+                idy: idy + 2 * self.pad + 1,
+                idz: idz + 2 * self.pad + 1].T
+            label = self.labeled['lV'][isl, idy, idz]
 
-        image = np.stack((ximage, yimage, zimage), axis=0)
+        elif index >= self.nx and self.ny != 0:
+            dim = (len(self.x), self.nly, len(self.z))
 
-        return torch.from_numpy(image).reshape((*image.shape)).float(), torch.tensor(label)
+            # Correct the index to accoutn for the first dimension
+            index -= int(self.nx)
+
+            # index of the image center in the subvolume
+            idx, idy, idz = np.unravel_index(index, dim)
+
+            # Position of slice
+            isl = np.where(self.labeled['ly'])[0][idy]
+
+            # Pad the slice
+            slc = np.pad(
+                self.V[:, isl, :], self.pad, mode='constant',
+                constant_values=0)
+
+            # print([idx, idx + 2 * self.pad + 1])
+            # print([idz, idz + 2 * self.pad + 1])
+
+            # Get image form padded slice and the label from the labeled volume
+            image = slc[
+                idx: idx + 2 * self.pad + 1,
+                idz: idz + 2 * self.pad + 1].T
+            label = self.labeled['lV'][idx, isl, idz]
+
+            # print(slc.shape)
+
+        elif index >= self.nx + self.ny:
+            dim = (len(self.x), len(self.y), self.nlz)
+
+            # Correct the index to accoutn for the first dimension
+            index -= int((self.nx + self.ny))
+
+            # index of the image center in the subvolume
+            idx, idy, idz = np.unravel_index(index, dim)
+
+            # Position of slice
+            isl = np.where(self.labeled['lz'])[0][idz]
+
+            # Pad the slice
+            slc = np.pad(
+                self.V[:, :, isl], self.pad, mode='constant',
+                constant_values=0)
+
+            # Get image form padded slice and the label from the labeled volume
+            image = slc[
+                idx: idx + 2 * self.pad + 1,
+                idy: idy + 2 * self.pad + 1]
+            label = self.labeled['lV'][idx, idy, isl]
+
+        return torch.from_numpy(image).reshape((1, *image.shape)).float(), torch.tensor(label)
 
     def __get_label__(self, index):
 
-        return self.targets[index]
+        if index == self.NT:
+            raise ValueError('Limit reached')
+
+        if index < self.nx and self.nx != 0:
+
+            # index of the image center in the subvolume
+            idx, idy, idz = np.unravel_index(index, self.dimx)
+
+            # Position of slice
+            isl = np.where(self.labeled['lx'])[0][idx]
+
+            label = self.labeled['lV'][isl, idy, idz]
+
+        elif index >= self.nx and self.ny != 0:
+
+            # Correct the index to accoutn for the first dimension
+            index -= int(self.nx)
+
+            # index of the image center in the subvolume
+            idx, idy, idz = np.unravel_index(index, self.dimx)
+
+            # Position of slice
+            isl = np.where(self.labeled['ly'])[0][idy]
+
+            label = self.labeled['lV'][idx, isl, idz]
+
+            # print(slc.shape)
+
+        elif index >= self.nx + self.ny:
+
+            # Correct the index to accoutn for the first dimension
+            index -= int((self.nx + self.ny))
+
+            # index of the image center in the subvolume
+            idx, idy, idz = np.unravel_index(index, self.dimz)
+
+            # Position of slice
+            isl = np.where(self.labeled['lz'])[0][idz]
+
+            label = self.labeled['lV'][idx, idy, isl]
+
+        return torch.tensor(label)
+
+    def __get_labels__(self):
+
+        targets = 9999 * np.ones(self.NT)
+
+        for i in range(self.NT):
+            if np.mod(i, 100000) == 0:
+                print(f"Got {i:{len(str(self.NT))}d} of {self.NT} labels")
+
+            targets[i] = self.__get_label__(i)
+
+        return targets
 
     def __len__(self):
         return self.NT
@@ -261,8 +317,7 @@ class CCPDataset(Dataset):
         self.imgcmap = plt.get_cmap('rainbow').copy()
         self.imgcmap.set_bad('lightgray', alpha=0.0)
 
-        self.imgnorm = Normalize(
-            np.quantile(self.V, 0.01), np.quantile(self.V, 0.99))
+        self.imgnorm = Normalize(-0.02, 0.04)
 
     def plot_samples(self):
 
@@ -277,21 +332,20 @@ class CCPDataset(Dataset):
             figure = plt.figure(figsize=(8, 8))
             cols, rows = 3, 3
 
-            for i in range(0, 3):
+            for i in range(1, cols * rows + 1):
 
                 label = self.labeldict['none']
 
                 while label == self.labeldict['none']:
 
-                    sample_idx = torch.randint(self.NT, size=(1,)).item()
+                    sample_idx = torch.randint(len(self), size=(1,)).item()
                     img, label = self[sample_idx]
 
-                for _j, _l in enumerate(['X', 'Y', 'Z']):
-                    figure.add_subplot(rows, cols, 3*i+1+_j)
-                    plt.title(f"{_l}: {labels_map[int(label)]}")
-                    plt.axis("off")
-                    im = plt.imshow(img[:, _j, :, :].squeeze().numpy(),
-                                    cmap="rainbow", aspect='auto')
+                figure.add_subplot(rows, cols, i)
+                plt.title(labels_map[int(label)])
+                plt.axis("off")
+                im = plt.imshow(img.squeeze().numpy(),
+                                cmap="rainbow", aspect='auto')
             # figure.colorbar(im)
             plt.show(block=False)
 
