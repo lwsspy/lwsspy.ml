@@ -81,7 +81,7 @@ class CCPNet(nn.Module):
             print(x.shape)
             print("")
             print("Linear 3")
-        x = F.softmax(self.fc3(x), dim=0)
+        x = self.fc3(x)
         if v:
             print(x.shape)
             print("")
