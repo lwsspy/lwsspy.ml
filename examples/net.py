@@ -86,8 +86,6 @@ print("Ntest: ", len(test_data))
 
 # %% Create dataloaders
 
-batch_size = 64
-
 
 def WRS(dataset, N=None):
     # distribution of classes in the dataset
@@ -107,13 +105,15 @@ def WRS(dataset, N=None):
 wrs = WRS(training_data, 1000)
 
 # %%
-
+batch_size = 64
 train_dataloader = DataLoader(
     training_data, batch_size=batch_size,
-    sampler=WRS(training_data, len(training_data)))
+    sampler=WRS(training_data, len(training_data)),
+    num_workers=1)
 test_dataloader = DataLoader(
     test_data, batch_size=batch_size,
-    sampler=WRS(test_data, len(test_data)))
+    sampler=WRS(test_data, len(test_data)),
+    num_workers=1)
 
 
 # train_dataloader = DataLoader(

@@ -264,7 +264,7 @@ class CCPDataset(Dataset):
         bounds = bounds + [pickarray[-1] + dpickarray[-1]]
 
         # Create adhoc cmap and norm
-        self.bcmap = plt.get_cmap('rainbow').copy()
+        self.bcmap = copy(plt.get_cmap('rainbow'))
         self.bcmap.set_bad('lightgray', alpha=0.0)
 
         self.bnorm = BoundaryNorm(bounds, self.bcmap.N)
