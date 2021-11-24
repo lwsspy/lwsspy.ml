@@ -28,6 +28,7 @@ class CCPDataset(Dataset):
         self.V = torch.from_numpy(vardict["V"])
         self.V = self.V - self.V.min()
         self.V = self.V/self.V.max()
+        self.V = self.V.float()
 
         # Labeled
         self.labeled = dict()

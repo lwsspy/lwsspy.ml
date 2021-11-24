@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader, dataloader
 
 # %%
 model = CCPNet()
+model = model.float()
 input = torch.randn(1, 3, 76, 76)
 out = model(input)
 
@@ -63,8 +64,6 @@ def trainTestSplit(dataset, TTR=0.7, rand=True):
     indices0 = indices[:int(TTR * N)]
     indices1 = indices[int(TTR * N):]
 
-    print(len(dataset.targets[indices0]))
-    print(len(dataset.targets[indices1]))
     trainDataset = CustomSubset(
         dataset, indices0, labels=dataset.targets[indices0])
     valDataset = CustomSubset(
@@ -73,7 +72,7 @@ def trainTestSplit(dataset, TTR=0.7, rand=True):
 
 
 # %%
-training_data, test_data = trainTestSplit(dataset, TTR=0.8)
+training_data, test_data = trainTestSplit(dataset, TTR=0.7)
 
 # # %%
 # # Decimate training/tests data
@@ -110,7 +109,7 @@ optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 # %% Define Training Loop
 
 
-def train_loop(dataloader, model, loss_fn, optimizer, num_batches=None):
+def train_loop(dataloader, model, loss_fn, optimizer, device='cpu', num_batches=None):
     size = len(dataloader.dataset)
 
     if not num_batches:
@@ -139,7 +138,7 @@ def train_loop(dataloader, model, loss_fn, optimizer, num_batches=None):
 
 # %% Define test_loop
 
-def test_loop(dataloader, model, loss_fn, num_batches=None):
+def test_loop(dataloader, model, loss_fn, device='cpu', num_batches=None):
     size = len(dataloader.dataset)
 
     if not num_batches:
@@ -150,6 +149,7 @@ def test_loop(dataloader, model, loss_fn, num_batches=None):
     with torch.no_grad():
         for batch, (X, y) in enumerate(dataloader):
             X, y = X.to(device), y.to(device)
+
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
@@ -164,7 +164,7 @@ def test_loop(dataloader, model, loss_fn, num_batches=None):
 
 
 # %% Optimization
-epochs = 10
+epochs = 1
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train_loop(train_dataloader, model, loss_fn, optimizer, num_batches=1000)
