@@ -147,11 +147,11 @@ class CCPDataset(Dataset):
 
         # Get slices
         xslc = torch.nn.functional.pad(
-            self.V[idx, :, :], pad=self.padtuple, mode='constant', value=0)
+            self.V[idx, :, :], pad=list(self.padtuple), mode='constant', value=0)
         yslc = torch.nn.functional.pad(
-            self.V[:, idy, :], pad=self.padtuple, mode='constant', value=0)
+            self.V[:, idy, :], pad=list(self.padtuple), mode='constant', value=0)
         zslc = torch.nn.functional.pad(
-            self.V[:, :, idz], pad=self.padtuple, mode='constant', value=0)
+            self.V[:, :, idz], pad=list(self.padtuple), mode='constant', value=0)
 
         # Get excerpts
         ximage = xslc[
