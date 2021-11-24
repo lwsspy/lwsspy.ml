@@ -1,5 +1,6 @@
 # %% Create Nerual Net
 # from torchinfo import summary
+import pandas as pd
 from torch import nn
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
@@ -17,8 +18,8 @@ from torch.utils.data import DataLoader, dataloader
 # %%
 model = CCPNet()
 model = model.float()
-input = torch.randn(1, 3, 76, 76)
-out = model(input)
+tin = torch.randn(1, 3, 76, 76)
+out = model.forward(tin, v=True)
 
 # %% Check out the!pip layers
 summary(model, input_size=(1, 3, 76, 76))
@@ -87,12 +88,40 @@ print("Ntest: ", len(test_data))
 
 batch_size = 64
 
+
+def WRS(dataset, N=None):
+    # distribution of classes in the dataset
+    class_sample_count = np.array(
+        [len(np.where(dataset.targets == t)[0]) for t in np.unique(dataset.targets)])
+    weight = 1. / class_sample_count
+
+    samples_weight = np.array(weight[dataset.targets])
+
+    sampler = torch.utils.data.sampler.WeightedRandomSampler(
+        weights=samples_weight,
+        num_samples=N,
+        replacement=False)
+    return sampler
+
+
+wrs = WRS(training_data, 1000)
+
+# %%
+
 train_dataloader = DataLoader(
     training_data, batch_size=batch_size,
-    sampler=ImbalancedDatasetSampler(training_data, callback_get_label=lambda x: x.targets))
+    sampler=WRS(training_data, len(training_data)))
 test_dataloader = DataLoader(
     test_data, batch_size=batch_size,
-    sampler=ImbalancedDatasetSampler(test_data, callback_get_label=lambda x: x.targets))
+    sampler=WRS(test_data, len(test_data)))
+
+
+# train_dataloader = DataLoader(
+#     training_data, batch_size=batch_size,
+#     sampler=ImbalancedDatasetSampler(training_data, callback_get_label=lambda x: x.targets))
+# test_dataloader = DataLoader(
+#     test_data, batch_size=batch_size,
+#     sampler=ImbalancedDatasetSampler(test_data, callback_get_label=lambda x: x.targets))
 
 # %% Setup Optimization
 
@@ -164,10 +193,10 @@ def test_loop(dataloader, model, loss_fn, device='cpu', num_batches=None):
 
 
 # %% Optimization
-epochs = 1
+epochs = 5
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
-    train_loop(train_dataloader, model, loss_fn, optimizer, num_batches=1000)
+    train_loop(train_dataloader, model, loss_fn, optimizer, num_batches=300)
     test_loop(test_dataloader, model, loss_fn, num_batches=300)
 print("Done!")
 
