@@ -272,7 +272,7 @@ class CCPDataset(Dataset):
     def __set_img_cmap_norm__(self):
 
         # Create adhoc cmap and norm
-        self.imgcmap = plt.get_cmap('rainbow').copy()
+        self.imgcmap = copy(plt.get_cmap('rainbow'))
         self.imgcmap.set_bad('lightgray', alpha=0.0)
 
         self.imgnorm = Normalize(
