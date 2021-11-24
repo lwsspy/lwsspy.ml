@@ -22,47 +22,53 @@ class CCPDataset(Dataset):
         vardict = np.load(filename, allow_pickle=True)
 
         # Assign variables
-        self.x = vardict["x"]
-        self.y = vardict["y"]
-        self.z = vardict["z"]
-        self.V = vardict["V"]
-        self.V = self.V - np.min(self.V)
-        self.V = self.V/np.max(self.V)
+        self.x = torch.from_numpy(vardict["x"])
+        self.y = torch.from_numpy(vardict["y"])
+        self.z = torch.from_numpy(vardict["z"])
+        self.V = torch.from_numpy(vardict["V"])
+        self.V = self.V - self.V.min()
+        self.V = self.V/self.V.max()
 
         # Labeled
         self.labeled = dict()
-        self.labeled["lx"] = vardict["lx"]
-        self.labeled["ly"] = vardict["ly"]
-        self.labeled["lz"] = vardict["lz"]
-        self.labeled["lV"] = vardict["lV"]
+        self.labeled["lx"] = torch.from_numpy(vardict["lx"])
+        self.labeled["ly"] = torch.from_numpy(vardict["ly"])
+        self.labeled["lz"] = torch.from_numpy(vardict["lz"])
+        self.labeled["lV"] = torch.from_numpy(vardict["lV"])
 
         # Making sure we don't
         self.fix_labeling()
-        self.positions = np.where(~np.equal(self.labeled["lV"], -999))
-        self.npositions = np.where(np.equal(self.labeled["lV"], -999))
+        print('get where')
+        self.positions = torch.stack(list(torch.where(
+            ~torch.eq(self.labeled["lV"], -999))))
+        self.npositions = torch.stack(list(torch.where(
+            torch.eq(self.labeled["lV"], -999))))
 
-        self.NT = len(self.positions[0])
-        self.targets = torch.from_numpy(self.labeled["lV"][self.positions])
+        print('set nt')
+        self.NT = torch.tensor(self.positions[0].size()[0])
+        self.targets = self.labeled["lV"][
+            self.positions[0], self.positions[1], self.positions[2]]
 
         # Label dictionary
         self.labeldict = vardict["labeldict"].item()
 
         # Padding value
         self.pad = int((sq_size - 1)/2)
+        self.padtuple = torch.tensor([self.pad, self.pad, self.pad, self.pad])
         self.padval = 0
         self.padmask = self.labeldict['none']
 
         # Number of labeled slices in each dimension l? is a boolean array
-        self.nlx = np.sum(self.labeled['lx'])
-        self.nly = np.sum(self.labeled['ly'])
-        self.nlz = np.sum(self.labeled['lz'])
+        self.nlx = torch.sum(self.labeled['lx'])
+        self.nly = torch.sum(self.labeled['ly'])
+        self.nlz = torch.sum(self.labeled['lz'])
 
         # Total number of items is
         # n labeled slice in one direction
         #   X dimension of the other two dimensions
-        self.nx = self.nlx * self.y.size * self.z.size
-        self.ny = self.nly * self.x.size * self.z.size
-        self.nz = self.nlz * self.x.size * self.y.size
+        self.nx = torch.tensor(self.nlx * self.y.size()[0] * self.z.size()[0])
+        self.ny = torch.tensor(self.nly * self.x.size()[0] * self.z.size()[0])
+        self.nz = torch.tensor(self.nlz * self.x.size()[0] * self.y.size()[0])
         # self.NT = self.nx + self.ny + self.nz
 
         # Subvolume dimennsions Slice dimensions
@@ -93,17 +99,17 @@ class CCPDataset(Dataset):
     def fix_labeling(self):
 
         # kjlskj
-        x = copy(self.labeled["lV"])
+        x = torch.clone(self.labeled["lV"])
         x[~self.labeled['lx'], :, :] = -999
-        y = copy(self.labeled["lV"])
+        y = torch.clone(self.labeled["lV"])
         y[:, ~self.labeled['ly'], :] = -999
-        z = copy(self.labeled["lV"])
+        z = torch.clone(self.labeled["lV"])
         z[:, :, ~self.labeled['lz']] = -999
 
         # lkjdsf
-        xs = ~np.equal(x, -999)
-        ys = ~np.equal(y, -999)
-        zs = ~np.equal(z, -999)
+        xs = ~torch.eq(x, -999)
+        ys = ~torch.eq(y, -999)
+        zs = ~torch.eq(z, -999)
 
         pos = (xs | ys | zs)
 
@@ -119,6 +125,16 @@ class CCPDataset(Dataset):
         # mask[pos] = 0
         self.labeled['lV'][~pos] = -999
 
+    def to(self, device):
+
+        self.NT.to(device)
+        self.positions.to(device)
+        self.V.to(device)
+        self.padtuple.to(device)
+
+        for k, v in self.labeled.items():
+            v.to(device)
+
     def __getitem__(self, index):
 
         if index >= self.NT:
@@ -130,15 +146,12 @@ class CCPDataset(Dataset):
         idz = self.positions[2][index]
 
         # Get slices
-        xslc = np.pad(
-            self.V[idx, :, :], self.pad, mode='constant',
-            constant_values=0)
-        yslc = np.pad(
-            self.V[:, idy, :], self.pad, mode='constant',
-            constant_values=0)
-        zslc = np.pad(
-            self.V[:, :, idz], self.pad, mode='constant',
-            constant_values=0)
+        xslc = torch.nn.functional.pad(
+            self.V[idx, :, :], pad=self.padtuple, mode='constant', value=0)
+        yslc = torch.nn.functional.pad(
+            self.V[:, idy, :], pad=self.padtuple, mode='constant', value=0)
+        zslc = torch.nn.functional.pad(
+            self.V[:, :, idz], pad=self.padtuple, mode='constant', value=0)
 
         # Get excerpts
         ximage = xslc[
@@ -155,9 +168,9 @@ class CCPDataset(Dataset):
 
         label = self.labeled['lV'][idx, idy, idz]
 
-        image = np.stack((ximage, yimage, zimage), axis=0)
+        image = torch.stack((ximage, yimage, zimage), axis=0)
 
-        return torch.from_numpy(image).reshape((*image.shape)).float(), torch.tensor(label)
+        return image, label
 
     def __get_label__(self, index):
 

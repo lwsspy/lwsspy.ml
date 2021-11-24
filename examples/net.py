@@ -1,5 +1,5 @@
 # %% Create Nerual Net
-from torchinfo import summary
+# from torchinfo import summary
 from torch import nn
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
@@ -40,8 +40,7 @@ print(torch.max(out, 1))
 # %% Loading an existing dataset
 
 filename = \
-    '/Users/lucassawade/OneDrive/Research/RF/DATA/GLImER/' \
-    'ccps/US_P_0.58_minrad_3D_it_f2_volume_labeled.npz'
+    '/Users/lucassawade/OneDrive/Research/RF/DATA/GLImER/ccps/US_P_0.58_minrad_3D_it_f2_volume_labeled.npz'
 sq_size = 75
 dataset = CCPDataset(filename, sq_size=sq_size)
 
@@ -87,7 +86,7 @@ print("Ntest: ", len(test_data))
 
 # %% Create dataloaders
 
-batch_size = 10
+batch_size = 64
 
 train_dataloader = DataLoader(
     training_data, batch_size=batch_size,
@@ -100,8 +99,6 @@ test_dataloader = DataLoader(
 
 # Hyper Parameters
 learning_rate = 1e-2
-
-epochs = 5
 
 # Initialize the loss function
 loss_fn = nn.CrossEntropyLoss()
@@ -120,6 +117,9 @@ def train_loop(dataloader, model, loss_fn, optimizer, num_batches=None):
         num_batches = len(dataloader)
 
     for batch, (X, y) in enumerate(dataloader):
+
+        X, y = X.to(device), y.to(device)
+
         # Compute prediction and loss
         pred = model(X)
         loss = loss_fn(pred, y)
@@ -149,6 +149,7 @@ def test_loop(dataloader, model, loss_fn, num_batches=None):
 
     with torch.no_grad():
         for batch, (X, y) in enumerate(dataloader):
+            X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
@@ -163,7 +164,7 @@ def test_loop(dataloader, model, loss_fn, num_batches=None):
 
 
 # %% Optimization
-epochs = 100
+epochs = 10
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train_loop(train_dataloader, model, loss_fn, optimizer, num_batches=1000)
