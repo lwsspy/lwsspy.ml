@@ -3,6 +3,7 @@ This file shows how to get from a CCP labeled volume to a Pytorch datta set
 
 """
 import torch
+from torch import nn
 from torch.utils.data import Dataset
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,9 +12,30 @@ from copy import copy
 # from ...plot import plot_label
 
 
+def upsample(x, f):
+    xin = x.reshape(1, 1, *x.shape)
+    indtype = xin.dtype
+    if indtype == torch.bool:
+        xin = xin.type(torch.float32)
+    elif indtype == torch.int64:
+        xin = xin.type(torch.float32)
+    N = len(x.shape)
+
+    # Upsample the array
+    m = nn.Upsample(scale_factor=tuple((f for _ in range(N))))
+    xout = torch.squeeze(m(xin))
+
+    if indtype == torch.bool:
+        xout = xout.type(torch.bool)
+    elif indtype == torch.int64:
+        xout = xout.type(torch.int64)
+
+    return xout
+
+
 class CCPDataset(Dataset):
 
-    def __init__(self, filename, sq_size: int = 33):
+    def __init__(self, filename, sq_size: int = 33, ups: int = None):
         super().__init__()
         if sq_size % 2 == 0:
             raise ValueError("The square image size must be odd.")
@@ -37,6 +59,11 @@ class CCPDataset(Dataset):
         self.labeled["lz"] = torch.from_numpy(vardict["lz"])
         self.labeled["lV"] = torch.from_numpy(vardict["lV"])
 
+        # Number of labeled slices in each dimension l? is a boolean array
+        self.nlx = torch.sum(self.labeled['lx'])
+        self.nly = torch.sum(self.labeled['ly'])
+        self.nlz = torch.sum(self.labeled['lz'])
+
         # Making sure we don't
         self.fix_labeling()
         print('get where')
@@ -50,14 +77,33 @@ class CCPDataset(Dataset):
         self.targets = self.labeled["lV"][
             self.positions[0], self.positions[1], self.positions[2]]
 
+        if ups:
+            if ups > 1.0:
+                self.x = upsample(self.x, ups)
+                self.y = upsample(self.y, ups)
+                self.z = upsample(self.z, ups)
+                self.V = upsample(self.V, ups)
+                self.labeled["lx"] = upsample(self.labeled["lx"], ups)
+                self.labeled["ly"] = upsample(self.labeled["ly"], ups)
+                self.labeled["lz"] = upsample(self.labeled["lz"], ups)
+                self.labeled["lV"] = upsample(self.labeled["lV"], ups)
+                self.ups = ups
+        else:
+            self.ups = 1.0
+
         # Label dictionary
         self.labeldict = vardict["labeldict"].item()
 
         # Padding value
         self.pad = int((sq_size - 1)/2)
-        self.padtuple = torch.tensor([self.pad, self.pad, self.pad, self.pad])
+        self.padtuple = torch.tensor(
+            [self.pad, self.pad, self.pad, self.pad, self.pad, self.pad])
         self.padval = 0
         self.padmask = self.labeldict['none']
+
+        # Padd the volume
+        self.padV = torch.nn.functional.pad(
+            self.V, pad=list(self.padtuple), mode='constant', value=0)
 
         # Number of labeled slices in each dimension l? is a boolean array
         self.nlx = torch.sum(self.labeled['lx'])
@@ -142,30 +188,32 @@ class CCPDataset(Dataset):
             raise ValueError('Limit reached')
 
         # first get position
-        idx = self.positions[0][index]
-        idy = self.positions[1][index]
-        idz = self.positions[2][index]
+        idx = int(self.positions[0][index]*self.ups)
+        idy = int(self.positions[1][index]*self.ups)
+        idz = int(self.positions[2][index]*self.ups)
 
         # Get slices
-        xslc = torch.nn.functional.pad(
-            self.V[idx, :, :], pad=list(self.padtuple), mode='constant', value=0)
-        yslc = torch.nn.functional.pad(
-            self.V[:, idy, :], pad=list(self.padtuple), mode='constant', value=0)
-        zslc = torch.nn.functional.pad(
-            self.V[:, :, idz], pad=list(self.padtuple), mode='constant', value=0)
+        # xslc = torch.nn.functional.pad(
+        #     self.V[idx, :, :], pad=list(self.padtuple), mode='constant', value=0)
+        # yslc = torch.nn.functional.pad(
+        #     self.V[:, idy, :], pad=list(self.padtuple), mode='constant', value=0)
+        # zslc = torch.nn.functional.pad(
+        #     self.V[:, :, idz], pad=list(self.padtuple), mode='constant', value=0)
 
         # Get excerpts
-        ximage = xslc[
+        ximage = self.padV[self.pad + idx,
+                           idy: idy + 2 * self.pad + 1,
+                           idz: idz + 2 * self.pad + 1].T
+
+        yimage = self.padV[
+            idx: idx + 2 * self.pad + 1,
+            self.pad + idy,
+            idz: idz + 2 * self.pad + 1].T
+
+        zimage = self.padV[
+            idx: idx + 2 * self.pad + 1,
             idy: idy + 2 * self.pad + 1,
-            idz: idz + 2 * self.pad + 1].T
-
-        yimage = yslc[
-            idx: idx + 2 * self.pad + 1,
-            idz: idz + 2 * self.pad + 1].T
-
-        zimage = zslc[
-            idx: idx + 2 * self.pad + 1,
-            idy: idy + 2 * self.pad + 1]
+            self.pad + idz]
 
         label = self.labeled['lV'][idx, idy, idz]
 
@@ -251,10 +299,10 @@ class CCPDataset(Dataset):
 
         picknumber = []
         for label, number in self.labeldict.items():
-            if label != 'none':
-                picknumber.append(number)
+            # if label != 'none':
+            picknumber.append(number)
 
-        # Get boundary color norm based on label numbers
+            # Get boundary color norm based on label numbers
         pickarray = np.array(picknumber)
         dpickarray = np.diff(pickarray)/2
 
@@ -304,7 +352,7 @@ class CCPDataset(Dataset):
                     figure.add_subplot(rows, cols, 3*i+1+_j)
                     plt.title(f"{_l}: {labels_map[int(label)]}")
                     plt.axis("off")
-                    im = plt.imshow(img[:, _j, :, :].squeeze().numpy(),
+                    im = plt.imshow(img[_j, :, :].squeeze().numpy(),
                                     cmap="rainbow", aspect='auto')
             # figure.colorbar(im)
             plt.show(block=False)
